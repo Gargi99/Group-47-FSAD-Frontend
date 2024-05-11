@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); 
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body background="assets\images\login.png">
+    <div class="container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="userName">Username:</label><br>
+            <input type="text" id="userName" placeholder="Enter Username" name="userName" required><br>
+            
+            <label for="passphrase">Password:</label><br>
+            <input type="password" placeholder="Enter Password" id="passphrase" required><br><br>
+            
+            <input type="submit" value="Login">
+        </form>
+        <br>
+        <div class="forgot-password">
+            <a href="forgot_password.html"><b>Forgot Password?</b></a>
+        </div>
+        <p id="errorMessage" class="error"></p>
+        <p><b>You Don't have an account? Register Here <a href="Registration.html">Register</a>.</b></p>
+    </div>
+    </div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); 
+      
+        const userName = document.getElementById('userName').value.trim();
+        const passphrase = document.getElementById('passphrase').value.trim();
+
+        if (!userName || !passphrase) {
+            alert('Username and password are required.');
+            return;
+        }
+
+        const url = `http://localhost:8080/learnnow/authenticate/validateUser?userName=${encodeURIComponent(userName)}&passphrase=${encodeURIComponent(passphrase)}`;
+
+        fetch(url)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.error('Status code wrong:', response.status);
+                throw new Error('Login failed');
+            }
+        })
+        .then(data => {
+            if (data === true) {
+            console.log('Login successfull with right username n  password',userName ," ", passphrase);
+           localStorage.setItem('userName',userName);
+            window.location.href = 'HomePage.html';
+            } else {
+                alert('Invalid username or password');
+            }
+        })
+        .catch(error => {
+            console.error('Error during login:', error);
+            alert('Login failed. Please try again.');
+        });
+
+    });
+</script>
+</body>
+</html>

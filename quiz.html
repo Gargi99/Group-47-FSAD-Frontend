@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>English Quiz</title>
+  
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+#results {
+  text-align: center;
+  font-size: 1.2em;
+}
+
+  </style>
+</head> 
+<body >
+    <h1>Quiz</h1>  
+  
+    <form id="quizForm"  onsubmit="submitQuizForm(event)">
+      <div id="quizContainer">Loading...</div>
+      <button type="submit">Submit Quiz</button>
+    </form>
+
+    <h1>Quiz Results</h1>
+  <div id="quizResults"></div>
+
+    <script>
+        async function fetchQuizDetails() {
+            try {
+                console.log("In fetch quiz details");
+                const response = await fetch('http://localhost:8080/learnnow/quiz/getQuizDetails?language=English');
+                const quizDetails = await response.json();
+                console.log("quiz details , ", quizDetails)
+
+                displayQuizDetails(quizDetails);
+                getUserId();
+            } catch (error) {
+                console.error('Error fetching quiz details:', error);
+            }
+        }
+
+        function displayQuizDetails(quizDetails) {
+            const quizContainer = document.getElementById('quizContainer');
+            quizContainer.innerHTML = '';
+            const quizId =parseInt(quizDetails[0].quizId);
+             const language = quizDetails[0].languages ;
+             localStorage.setItem('language', language);
+            localStorage.setItem('quizId', quizId);
+            quizDetails.forEach(question => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                questionDiv.innerHTML = `
+                    
+                    <p>Question: ${question.question}</p>
+                    <p>Options:</p>
+                    <ul>
+                        <li><input type="radio" name="answer${question.questionId}" value="${question.option1}">${question.option1}</li>
+                        <li><input type="radio" name="answer${question.questionId}" value="${question.option2}">${question.option2}</li>
+                        <li><input type="radio" name="answer${question.questionId}" value="${question.option3}">${question.option3}</li>
+                        <li><input type="radio" name="answer${question.questionId}" value="${question.option4}">${question.option4}</li>
+                    </ul>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+
+        async function submitQuizForm(event) {
+            event.preventDefault();
+           
+   const userId =localStorage.getItem('userId');
+   const language = localStorage.getItem('language');
+  const quizResponses = [];
+  const radioInputs = document.querySelectorAll('input[type="radio"]:checked');
+  const quizId =  parseInt(localStorage.getItem('quizId'));
+  radioInputs.forEach(input => {
+    const questionId = parseInt(input.name.replace('answer', ''));
+    const answer = input.value;
+    quizResponses.push({ userId, quizId, questionId, answer });
+  });
+
+  try {
+    // Send the quiz responses to the server
+    console.log("quiz answers",quizResponses);
+    const response = await fetch('http://localhost:8080/learnnow/userAnswers/submitQuizResponses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(quizResponses)
+    });
+    const data = await response.text();
+    console.log('Response from submit quiz form:', data);
+    await showQuizResults(userId, language, quizId);
+  } catch (error) {
+    console.error('Error submitting quiz form:', error);
+  }
+            
+ }
+
+ async function showQuizResults(userId, language, quizId) {
+  try {
+    const url = `http://localhost:8080/learnnow/userAnswers/showResults?userId=${userId}&language=${language}&quizId=${quizId}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    console.log('Quiz Results:', result);
+
+    // Display quiz results on the webpage
+    const quizResultsDiv = document.getElementById('quizResults');
+    quizResultsDiv.innerHTML = `
+      <p>Total Correct Answers: ${result.totalCorrectAnswers}</p>
+      <p>Total Questions: ${result.totalQuestionsAnswered}</p>
+    `;
+  } catch (error) {
+    console.error('Error fetching quiz results:', error);
+  }
+}
+
+
+    async function getUserId() {
+ 
+    try {
+      // If userId is not stored, make an API call to fetch it
+      const userName = localStorage.getItem('userName'); 
+      const response = await fetch(`http://localhost:8080/learnnow/user/getUserDetails?userName=${encodeURIComponent(userName)}`);
+      const userData = await response.json();
+    console.log("user data ",userData );
+      // Extract userId from the response
+      const userId = userData.userId; // Assuming userId is available in the response
+
+      // Store userId in local storage for future use
+      localStorage.setItem('userId', userId);
+
+      return userId;
+    } catch (error) {
+      console.error('Error fetching userId:', error);
+    }
+  }
+    window.onload = fetchQuizDetails;
+    </script>
+</body> 
+</html> 
+
+
+
+ 
