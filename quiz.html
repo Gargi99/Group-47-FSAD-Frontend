@@ -7,6 +7,7 @@
   <style>
     body {
   font-family: Arial, sans-serif;
+  background-size: 100%;
 }
 
 h1 {
@@ -35,10 +36,17 @@ button:hover {
   text-align: center;
   font-size: 1.2em;
 }
+h1{
+  color: rgba(18, 13, 107, 0.804);
+}
+p{
+  color: rgba(14, 11, 105, 0.804);
+  font: bold;
+}
 
   </style>
 </head> 
-<body >
+<body background="/Learning-Language/assets/images/quiz1.png">
     <h1>Quiz</h1>  
   
     <form id="quizForm"  onsubmit="submitQuizForm(event)">
@@ -53,7 +61,7 @@ button:hover {
         async function fetchQuizDetails() {
             try {
                 console.log("In fetch quiz details");
-                const response = await fetch('http://localhost:8080/learnnow/quiz/getQuizDetails?language=English');
+                const response = await fetch('http://localhost:8001/learnnow/quiz/getQuizDetails?language=English');
                 const quizDetails = await response.json();
                 console.log("quiz details , ", quizDetails)
 
@@ -106,7 +114,7 @@ button:hover {
   try {
     // Send the quiz responses to the server
     console.log("quiz answers",quizResponses);
-    const response = await fetch('http://localhost:8080/learnnow/userAnswers/submitQuizResponses', {
+    const response = await fetch('http://localhost:8001/learnnow/userAnswers/submitQuizResponses', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -124,7 +132,7 @@ button:hover {
 
  async function showQuizResults(userId, language, quizId) {
   try {
-    const url = `http://localhost:8080/learnnow/userAnswers/showResults?userId=${userId}&language=${language}&quizId=${quizId}`;
+    const url = `http://localhost:8001/learnnow/userAnswers/showResults?userId=${userId}&language=${language}&quizId=${quizId}`;
     const response = await fetch(url);
     const result = await response.json();
     console.log('Quiz Results:', result);
@@ -146,7 +154,7 @@ button:hover {
     try {
       // If userId is not stored, make an API call to fetch it
       const userName = localStorage.getItem('userName'); 
-      const response = await fetch(`http://localhost:8080/learnnow/user/getUserDetails?userName=${encodeURIComponent(userName)}`);
+      const response = await fetch(`http://localhost:8001/learnnow/user/getUserDetails?userName=${encodeURIComponent(userName)}`);
       const userData = await response.json();
     console.log("user data ",userData );
       // Extract userId from the response
@@ -164,7 +172,3 @@ button:hover {
     </script>
 </body> 
 </html> 
-
-
-
- 
