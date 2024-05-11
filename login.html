@@ -16,7 +16,8 @@
         }
 
         .container {
-            background-color: rgba(255, 255, 255, 0.8); 
+            background:url("assets/images/Loginimg.png");
+            background-size: 400%;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
@@ -29,6 +30,7 @@
         form {
             max-width: 400px;
             margin: 0 auto;
+            
         }
 
         label {
@@ -38,10 +40,10 @@
         input[type="text"],
         input[type="password"],
         input[type="submit"] {
-            width: 100%;
+            width: 80%;
             padding: 10px;
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 10px;
             border: 1px solid #ccc;
         }
 
@@ -49,6 +51,7 @@
             background-color: #4CAF50;
             color: white;
             cursor: pointer;
+            width:50%;
         }
 
         input[type="submit"]:hover {
@@ -59,6 +62,7 @@
             color: red;
             margin-top: 5px;
         }
+        
     </style>
 </head>
 <body background="assets\images\login.png">
@@ -69,7 +73,7 @@
             <input type="text" id="userName" placeholder="Enter Username" name="userName" required><br>
             
             <label for="passphrase">Password:</label><br>
-            <input type="password" placeholder="Enter Password" id="passphrase" required><br><br>
+            <input type="password" placeholder="Enter Password" id="passphrase" required><br>
             
             <input type="submit" value="Login">
         </form>
@@ -94,7 +98,7 @@
             return;
         }
 
-        const url = `http://localhost:8080/learnnow/authenticate/validateUser?userName=${encodeURIComponent(userName)}&passphrase=${encodeURIComponent(passphrase)}`;
+        const url = `http://localhost:8001/learnnow/authenticate/validateUser?userName=${encodeURIComponent(userName)}&passphrase=${encodeURIComponent(passphrase)}`;
 
         fetch(url)
         .then(response => {
